@@ -19,27 +19,22 @@ services:
       - POSTGRES_PASSWORD=${PG_PASSWORD:-securePassproject}
       - POSTGRES_DB=project
     restart: unless-stopped
-
-  pgbouncer:
-    build:
-      context: .
-      dockerfile: ./postgres/pgbouncer/Dockerfile
+    profiles:
+      - dev
+  
+  postgres-test:
+    image: postgres:15.0-alpine
+    volumes:
+      - pg_data1:/var/lib/postgresql/data
+    container_name: postgres-test
     environment:
-      - DB_USER=${PG_USER:-projectweb}
-      - DB_PASSWORD=${PG_PASSWORD:-securePassproject}
-      - DB_HOST=postgres
-      - DB_NAME=project
-      - POOL_MODE=session
-      - ADMIN_USERS=postgres,${PG_USER:-projectweb}
-      - DEFAULT_POOL_SIZE=400
-      - MAX_CLIENT_CONN=10000
-      - LISTEN_PORT=5433
-      - MAX_DB_CONNECTIONS=0
-      - MIN_POOL_SIZE=20
-    ports:
-      - "5433:5433"
-    depends_on:
-      - postgres
+      - POSTGRES_USER=${PG_USER:-projectweb}
+      - POSTGRES_PASSWORD=${PG_PASSWORD:-securePassproject}
+      - POSTGRES_DB=project
+    command: -p 5439
+    restart: unless-stopped
+    profiles:
+      - test
 
   todo:
     container_name: todo
@@ -52,11 +47,19 @@ services:
     environment:
       # set environment variables
       - REDIS_URL=redis://kredis:6379/0
-    command: honcho start
+      - DEV_DATABASE_URL=${DEV_DATABASE_URL:-postgresql+psycopg2cffi://projectweb:securePassproject@postgres:5432/project}
+      # do not use this configuration on a production setting
+      - TEST_DATABASE_URL=${TEST_DATABASE_URL:-postgresql+psycopg2cffi://projectweb:securePassproject@postgres-test:5439/project}
+
+    command: python manage.py runserver
     depends_on:
       - kredis
+    profiles:
+      - test
+      - dev
 
 
 volumes:
   pg_data: {}
+  pg_data1: {}
   dragonflydata:

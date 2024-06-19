@@ -1,6 +1,6 @@
+import logging
 import os
 import sys
-import logging
 
 import eventlet
 from dotenv import load_dotenv
@@ -73,12 +73,6 @@ class Config:
         RQ_DEFAULT_DB = 0
         RQ_DEFAULT_URL = REDIS_URL
         
-    # Search parameters
-    MSEARCH_INDEX_NAME = "msearch"
-    MSEARCH_BACKEND = "simple"
-    MSEARCH_PRIMARY_KEY = "id"
-    MSEARCH_ENABLE = True
-    MSEARCH_LOGGER = logging.DEBUG
     
     # SQLAlchemy settings
     SQLALCHEMY_TRACK_MODIFICATIONS = True

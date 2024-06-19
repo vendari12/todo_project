@@ -29,7 +29,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarToggle">
           <div class="navbar-nav mr-auto">
-            <a class="nav-item nav-link" href="{{ url_for('about') }}">About</a>
+            <a class="nav-item nav-link" href="./about">About</a>
           </div>
 
           <!-- Navbar Right Side -->
@@ -41,15 +41,15 @@
                 Welcome {{ current_user.username }}!
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="{{ url_for('account') }}">Account Settings</a>
+                <a class="dropdown-item" href="{{ url_for('account.login') }}">Account Settings</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a>
+                <a class="dropdown-item" href="{{ url_for('account.logout') }}">Logout</a>
               </div>
             </li>
 
             {% else %}
-            <a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a>
-            <a class="nav-item nav-link" href="{{ url_for('register') }}">Register</a>
+            <a class="nav-item nav-link" href="{{ url_for('account.login') }}">Login</a>
+            <a class="nav-item nav-link" href="{{ url_for('account.register') }}">Register</a>
             {% endif %}
 
           </div>
@@ -64,8 +64,8 @@
       <div class="col-md-4">
         <div class="content-section">
           <nav class="nav flex-column">
-            <a class="nav-link" href="{{url_for('add_task')}}">Add Task</a>
-            <a class="nav-link active" href="{{url_for('all_tasks')}}">View All Tasks</a>
+            <a class="nav-link" href="{{url_for('tasks.add_task')}}">Add Task</a>
+            <a class="nav-link active" href="{{url_for('tasks.all_tasks')}}">View All Tasks</a>
           </nav>
         </div>
       </div>

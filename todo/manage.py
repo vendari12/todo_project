@@ -4,12 +4,13 @@ import logging
 import os
 import subprocess
 import unittest
+
 import typer
+from app import create_app, db
+from app.models import User, UserRole
+from config import Config, config
 from flask import Flask
 from flask_migrate import Migrate
-from app import create_app, db
-from app.models import Role, User
-from config import Config, config
 
 # Initialize the Typer CLI manager
 manager = typer.Typer()
@@ -80,9 +81,7 @@ def setup_general() -> None:
     """General setup for both development and production environments."""
     logging.info("Running general setup...")
     with app.app_context():
-        Role.insert_roles()
-        admin_role = Role.query.filter_by(name="Administrator").first()
-        if admin_role and not User.query.filter_by(email=Config.ADMIN_EMAIL).first():
+        if not User.query.filter_by(email=Config.ADMIN_EMAIL).first():
             user = User(
                 first_name="Admin",
                 last_name="Account",
@@ -90,10 +89,12 @@ def setup_general() -> None:
                 confirmed=True,
                 username="Admin",
                 email=Config.ADMIN_EMAIL,
+                role=UserRole.ADMIN,
+                date_of_birth="2000-01-01"
             )
             db.session.add(user)
             db.session.commit()
-            logging.info(f"Added administrator {user.full_name()}.")
+            logging.info(f"Added administrator {user.full_name}.")
         else:
             logging.info("Administrator role already exists or no admin role found.")
 

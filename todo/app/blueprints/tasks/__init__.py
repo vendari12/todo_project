@@ -1,0 +1,1 @@
+from app.blueprints.tasks.views import tasks  # noqa

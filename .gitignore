@@ -127,4 +127,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-todo_project/todo_project/site.db
+postgres/pg_data1
+potgres/pg_data
