@@ -27,6 +27,8 @@ The following dependencies are required for running this project locally
 ```
 $ make run
 ```
+##### Run test suites
+``` make test ```
 
 ##### Available commands
 
