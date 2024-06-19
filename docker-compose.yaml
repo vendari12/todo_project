@@ -1,0 +1,62 @@
+services:
+  
+  kredis:
+    hostname: kredis
+    image: docker.dragonflydb.io/dragonflydb/dragonfly
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    volumes:
+      - dragonflydata:/data
+
+  postgres:
+    image: postgres:15.0-alpine
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=${PG_USER:-projectweb}
+      - POSTGRES_PASSWORD=${PG_PASSWORD:-securePassproject}
+      - POSTGRES_DB=project
+    restart: unless-stopped
+
+  pgbouncer:
+    build:
+      context: .
+      dockerfile: ./postgres/pgbouncer/Dockerfile
+    environment:
+      - DB_USER=${PG_USER:-projectweb}
+      - DB_PASSWORD=${PG_PASSWORD:-securePassproject}
+      - DB_HOST=postgres
+      - DB_NAME=project
+      - POOL_MODE=session
+      - ADMIN_USERS=postgres,${PG_USER:-projectweb}
+      - DEFAULT_POOL_SIZE=400
+      - MAX_CLIENT_CONN=10000
+      - LISTEN_PORT=5433
+      - MAX_DB_CONNECTIONS=0
+      - MIN_POOL_SIZE=20
+    ports:
+      - "5433:5433"
+    depends_on:
+      - postgres
+
+  todo:
+    container_name: todo
+    build:
+      context: ./todo
+    ports:
+      - "5000:5000"
+    volumes:
+      - './todo:/src'
+    environment:
+      # set environment variables
+      - REDIS_URL=redis://kredis:6379/0
+    command: honcho start
+    depends_on:
+      - kredis
+
+
+volumes:
+  pg_data: {}
+  dragonflydata:
